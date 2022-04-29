@@ -1,10 +1,13 @@
 from LCalcParser import parser
-
+variableMap = {}
 def eval_expression(tree):
   print(tree)
   if tree[0] == 'num':
     return tree[1]
   elif tree[0] == 'name':
+    if tree[1] in variableMap.keys() and len(variableMap[tree[1]])>0:
+      print("found variable: " + str(variableMap[tree[1]][-1]))
+      return float(variableMap[tree[1]][-1])
     return tree[1]
   elif tree[0] == 'operation':
     op = tree[1]
@@ -24,13 +27,24 @@ def eval_expression(tree):
       return v1/v2
     else:
       return 'ERROR: Divide by Zero'
-  elif tree[0] == 'application':
+  elif tree[0] == 'abstraction':
     rator = eval_expression(tree[1])
     rand = eval_expression(tree[2])
     
-  elif tree[0] == 'abstraction':
-    input = eval_expression(tree[1])
-    function = eval_expression(tree[2])
+  elif tree[0] == 'application':
+    variableLetter = tree[1]
+    variableValue = eval_expression(tree[3])
+    if variableLetter in variableMap.keys():
+      variableMap[variableLetter].append(variableValue)
+    else:
+      variableMap.update({variableLetter:[variableValue]})
+    result = eval_expression(tree[2])
+    variableMap[variableLetter].pop()
+    return result
+
+
+
+
  
 
 def read_input():

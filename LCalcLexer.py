@@ -5,15 +5,15 @@ reserved = {'lambda': 'LAMBDA'}
 tokens = ['NUMBER','LPAREN','RPAREN','OP','NAME'] + \
   list(reserved.values())
 
-NUMBER = r'[0-9]+'
-LPAREN = r'('
-RPAREN = r')'
-OP = r'+|-|*|/'
-LAMBDA = r'[Ll][Aa][Mm][Bb][Dd][Aa]'
-NAME = r'[a-zA-z][a-zA-z0-9]*'
+t_NUMBER = r'[0-9]+'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+t_OP = r'\+|\-|\*|\/'
+t_LAMBDA = r'[Ll][Aa][Mm][Bb][Dd][Aa]'
+t_NAME = r'[a-zA-z][a-zA-z0-9]*'
 
 # Ignored characters
-t_ignore = " \r\n\t"
+t_ignore = " \r\n\t;"
 t_ignore_COMMENT = r'\#.*'
 
 def t_error(t):
