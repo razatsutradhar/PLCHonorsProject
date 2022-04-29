@@ -16,11 +16,11 @@ def p_expr_3(p):
 
 def p_expr_4(p):
   'expr : LPAREN expr expr RPAREN'
-  p[0] = ['abstraction', p[2], p[3]]
+  p[0] = ['application', p[2], p[3]]
 
 def p_expr_5(p):
-  'expr : LAMBDA NAME expr expr'
-  p[0] = ['application', p[2], p[3], p[4]]
+  'expr : LAMBDA NAME expr'
+  p[0] = ['abstraction', p[2], p[3]]
 
 def p_expr_6(p):
   'expr : LPAREN OP expr expr RPAREN'

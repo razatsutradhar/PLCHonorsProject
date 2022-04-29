@@ -1,7 +1,8 @@
 from LCalcParser import parser
+
 variableMap = {}
+variableValues = []
 def eval_expression(tree):
-  print(tree)
   if tree[0] == 'num':
     return tree[1]
   elif tree[0] == 'name':
@@ -27,25 +28,25 @@ def eval_expression(tree):
       return v1/v2
     else:
       return 'ERROR: Divide by Zero'
-  elif tree[0] == 'abstraction':
-    rator = eval_expression(tree[1])
-    rand = eval_expression(tree[2])
-    
+  #How many different cases of application are there?
+  # (x,y), (lambdaX. M)num, another application and another application
   elif tree[0] == 'application':
+    variableValues.append(eval_expression(tree[2]))
+    return eval_expression(tree[1])
+    #elif(tree[1][0] == 'name'): #question: how do I do apply (x y)?
+    #  return eval_expression(tree[1])
+  elif tree[0] == 'abstraction':
     variableLetter = tree[1]
-    variableValue = eval_expression(tree[3])
     if variableLetter in variableMap.keys():
-      variableMap[variableLetter].append(variableValue)
+        variableMap[variableLetter].append(variableValues[-1])
+        variableValues.pop()
     else:
-      variableMap.update({variableLetter:[variableValue]})
+      variableMap.update({variableLetter:[variableValues[-1]]})
+      variableValues.pop()
     result = eval_expression(tree[2])
     variableMap[variableLetter].pop()
     return result
 
-
-
-
- 
 
 def read_input():
   result = ''
