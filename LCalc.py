@@ -1,7 +1,18 @@
 from LCalcParser import parser
 variableMap = {}
+
+#main eval function
+def eval_tree(tree):
+  if tree[0] == 'sub':
+    return eval_substitution()
+  elif tree[0] == 'freeVar':
+    return eval_freeVariable()
+  elif tree[0] == 'alpha':
+    return eval_alphaReduction()
+  else:
+    return eval_expression(tree)
+
 def eval_expression(tree):
-  print(tree)
   if tree[0] == 'num':
     return tree[1]
   elif tree[0] == 'name':
@@ -71,7 +82,7 @@ def main():
       continue
     print(tree)
     try:
-      answer = eval_expression(tree)
+      answer = eval_tree(tree)
       if isinstance(answer,str):
         print('\nEVALUATION ERROR: '+answer+'\n')
       else:
