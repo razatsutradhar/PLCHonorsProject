@@ -7,7 +7,7 @@ def p_exprStart_1(p):
 
 def p_exprStart_2(p):
   'exprStart : expr LBRACKET NAME EQUALS expr RBRACKET SEMI'
-  p[0] = ['subst', p[1], p[3].upper(), p[5]]
+  p[0] = ['substitute', p[1], p[3].upper(), p[5]]
 
 def p_exprStart_3(p):
   'exprStart : FV LBRACKET expr RBRACKET SEMI'
