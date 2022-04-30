@@ -2,7 +2,7 @@ import ply.lex as lex
 
 reserved = {'lambda': 'LAMBDA'}
 
-tokens = ['NUMBER','LPAREN','RPAREN','OP','NAME','LBRACKET','RBRACKET','EQUALS','FV','ALPHA','COMMA'] + \
+tokens = ['NUMBER','LPAREN','RPAREN','OP','NAME','LBRACKET','RBRACKET','EQUALS','FV','ALPHA','COMMA','SEMI'] + \
   list(reserved.values())
 
 t_NUMBER = r'[0-9]+'
@@ -17,6 +17,7 @@ t_EQUALS = r'\='
 t_FV = r'fv'
 t_ALPHA = r'alpha'
 t_COMMA = r'\,'
+t_SEMI = r'\;'
 
 # Ignored characters
 t_ignore = " \r\n\t;"
