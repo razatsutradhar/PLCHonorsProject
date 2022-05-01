@@ -3,8 +3,10 @@ from LCalcParser import parser
 
 #unfinished. come back to later
 def eval_expression(tree):
-  global outside_expr
-  if tree[0] == 'num':
+  print(tree)
+  if(tree[0] == 'freevars'):
+    free_variable(tree[1])
+  elif tree[0] == 'num':
     return float(tree[1])
   elif tree[0] == 'name':
     return tree[1]

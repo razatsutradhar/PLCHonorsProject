@@ -27,13 +27,13 @@ def t_NAME(t):
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
 t_EQUALS = r'\='
-t_FV = r'fv'
+t_FV = r'[fF][vV]'
 t_ALPHA = r'alpha'
 t_COMMA = r'\,'
-t_SEMI = r'\;'
+t_SEMI = r';'
 
 # Ignored characters
-t_ignore = " \r\n\t;"
+t_ignore = " \r\n\t"
 t_ignore_COMMENT = r'\#.*'
 
 def t_error(t):
