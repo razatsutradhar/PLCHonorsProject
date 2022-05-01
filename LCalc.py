@@ -1,13 +1,15 @@
+
 from LCalcParser import parser
 freeVarSet = set()
 
 #unfinished. come back to later
 def eval_expression(tree):
-  print(tree)
   if(tree[0] == 'freevars'):
     freeVarSet.clear()
     free_variable(tree[1])
     return freeVarSet
+  if(tree[0] == 'alpha'):
+    alpha(tree[1],tree[2])
   elif tree[0] == 'num':
     return float(tree[1])
   elif tree[0] == 'name':
@@ -45,16 +47,13 @@ def beta_reduction(tree):
 
 #todo: change so it works with more advanced lambda expressions
 def alpha_helper(tree,oldvar,newvar): #debug: doesn't work with nested lambda expressions
-  #print(tree)
-  #print(oldvar)
-  #print(newvar)
   global outside_expr
   if(tree[0] == 'abstraction'):
-    if(tree[1] == oldvar):
+    if(tree[1] == oldvar): #only triggers for outter abstraction so for lambda x (lambda y (* x y)), it only does lambda x
       new_tree = alpha_helper(tree[2],oldvar,newvar)
       return new_tree #only executes when we have the final product
     else:
-      return [tree[0], tree[1],alpha_helper(tree[2],oldvar,newvar)] # only triggers when we have an inner abstraction
+      return [tree[0], tree[1],alpha_helper(tree[2],oldvar,newvar)] # only triggers when we have an inner abstraction so it keeps the lambda y
   elif (tree[0] == 'application'):
     left_branch = alpha_helper(tree[1], oldvar, newvar)
     right_branch = alpha_helper(tree[2], oldvar, newvar)
@@ -74,11 +73,8 @@ def alpha_helper(tree,oldvar,newvar): #debug: doesn't work with nested lambda ex
 def alpha(tree,var):
   global outside_expr
   new_tree = tree
-  if(tree[0] == 'abstraction'): #this should deal with nested lambda expressions?
-    if((alpha_helper(new_tree, new_tree[1], var))[0] == 'abstraction'):
-      new_tree = (alpha_helper(new_tree, new_tree[1], var))
-    else:
-      new_tree = (alpha_helper(new_tree, new_tree[1], var))
+  if(tree[0] == 'abstraction'): #this should deal with nested lambda expressions
+    new_tree = (alpha_helper(new_tree, new_tree[1], var))
     return new_tree
   if(tree[0] == 'application'):
     inner = (beta_reduction(tree))
@@ -105,24 +101,6 @@ def substitute(tree,var,val):
   elif (tree[0] == 'num'):
     return tree
 
-#todo: change so it works with more complicated lambda expressions
-def free_variable_helper(tree, bound_var):
-  if(tree[0] == 'abstraction'):
-    free_variable(tree)
-  elif(tree[0] == 'application' or tree[0] == 'operation'):
-    left_branch = free_variable_helper(tree[1], bound_var)
-    right_branch = free_variable_helper(tree[2], bound_var)
-    for i in range (len(right_branch)):
-      left_branch.append(right_branch[i])
-    return left_branch
-  elif (tree[0] == 'name'):
-    if(tree[1] != bound_var):
-      return tree[1]
-    else:
-      return []
-  elif (tree[0] == 'num'):
-    return []
-
 #finds the free variable of a single individual lambda expression. nothing more nothing less
 def free_variable(tree):
   if tree[0] == 'name':  # we're returning the sub-branch of the tree, not the value
@@ -133,8 +111,6 @@ def free_variable(tree):
   elif tree[0] == 'application':
     free_variable(tree[1])
     free_variable(tree[2])
-
-
 
 def read_input():
   result = ''
@@ -161,7 +137,6 @@ def main():
     #test:
     print(tree)
     print('\n')
-    print(beta_reduction(tree))
     try:
       answer = eval_expression(tree)
       if isinstance(answer,str):
