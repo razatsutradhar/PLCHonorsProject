@@ -1,11 +1,13 @@
 from LCalcParser import parser
-
+freeVarSet = set()
 
 #unfinished. come back to later
 def eval_expression(tree):
   print(tree)
   if(tree[0] == 'freevars'):
+    freeVarSet.clear()
     free_variable(tree[1])
+    return freeVarSet
   elif tree[0] == 'num':
     return float(tree[1])
   elif tree[0] == 'name':
@@ -123,9 +125,15 @@ def free_variable_helper(tree, bound_var):
 
 #finds the free variable of a single individual lambda expression. nothing more nothing less
 def free_variable(tree):
-  if(tree[0] == 'abstraction'):
-    bound_variable = tree[1]
-    return free_variable_helper(tree[2],bound_variable)
+  if tree[0] == 'name':  # we're returning the sub-branch of the tree, not the value
+    freeVarSet.add(tree[1])
+  elif tree[0] == 'abstraction':
+    free_variable(tree[2])
+    freeVarSet.remove(tree[1])
+  elif tree[0] == 'application':
+    free_variable(tree[1])
+    free_variable(tree[2])
+
 
 
 def read_input():
