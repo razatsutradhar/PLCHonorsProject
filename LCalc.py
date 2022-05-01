@@ -8,8 +8,10 @@ def eval_expression(tree):
     freeVarSet.clear()
     free_variable(tree[1])
     return freeVarSet
-  if(tree[0] == 'alpha'):
-    alpha(tree[1],tree[2])
+  elif(tree[0] == 'alpha'):
+    return alpha(tree[1],['name', tree[2]]) #debug: I hardcoded this but I can't do that for everything. So what now?
+  elif(tree[0] == 'substitute'):
+    return (substitute(tree[1],tree[2],tree[3]))
   elif tree[0] == 'num':
     return float(tree[1])
   elif tree[0] == 'name':
@@ -94,8 +96,8 @@ def substitute(tree,var,val):
     right_branch = substitute(tree[3], var, val)
     return [tree[0],left_branch,right_branch]
   elif(tree[0] == 'name'):
-    if(tree[1] == var.upper()): #todo: add so it also evaluates that it is a free variable
-      return parser.parse(val.upper()+';') #here val isn't a tree yet so we need to turn it into a tree
+    if(tree[1] == var): #todo: add so it also evaluates that it is a free variable
+      return val #here val isn't a tree yet so we need to turn it into a tree
     else:
       return tree
   elif (tree[0] == 'num'):
