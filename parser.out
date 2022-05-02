@@ -1,0 +1,436 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> exprStart
+Rule 1     exprStart -> expr SEMI
+Rule 2     exprStart -> expr LBRACKET NAME EQUALS expr RBRACKET SEMI
+Rule 3     exprStart -> FV LBRACKET expr RBRACKET SEMI
+Rule 4     exprStart -> ALPHA LBRACKET expr COMMA NAME RBRACKET SEMI
+Rule 5     expr -> NUMBER
+Rule 6     expr -> NAME
+Rule 7     expr -> LPAREN expr expr RPAREN
+Rule 8     expr -> LPAREN LAMBDA NAME expr RPAREN
+Rule 9     expr -> LPAREN OP expr expr RPAREN
+Rule 10    expr -> LPAREN expr RPAREN
+
+Terminals, with rules where they appear
+
+ALPHA                : 4
+COMMA                : 4
+EQUALS               : 2
+FV                   : 3
+LAMBDA               : 8
+LBRACKET             : 2 3 4
+LPAREN               : 7 8 9 10
+NAME                 : 2 4 6 8
+NUMBER               : 5
+OP                   : 9
+RBRACKET             : 2 3 4
+RPAREN               : 7 8 9 10
+SEMI                 : 1 2 3 4
+error                : 
+
+Nonterminals, with rules where they appear
+
+expr                 : 1 2 2 3 4 7 7 8 9 9 10
+exprStart            : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . exprStart
+    (1) exprStart -> . expr SEMI
+    (2) exprStart -> . expr LBRACKET NAME EQUALS expr RBRACKET SEMI
+    (3) exprStart -> . FV LBRACKET expr RBRACKET SEMI
+    (4) exprStart -> . ALPHA LBRACKET expr COMMA NAME RBRACKET SEMI
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    FV              shift and go to state 4
+    ALPHA           shift and go to state 5
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    exprStart                      shift and go to state 1
+    expr                           shift and go to state 2
+
+state 1
+
+    (0) S' -> exprStart .
+
+
+
+state 2
+
+    (1) exprStart -> expr . SEMI
+    (2) exprStart -> expr . LBRACKET NAME EQUALS expr RBRACKET SEMI
+
+    SEMI            shift and go to state 8
+    LBRACKET        shift and go to state 9
+
+
+state 3
+
+    (6) expr -> NAME .
+
+    SEMI            reduce using rule 6 (expr -> NAME .)
+    LBRACKET        reduce using rule 6 (expr -> NAME .)
+    RPAREN          reduce using rule 6 (expr -> NAME .)
+    NUMBER          reduce using rule 6 (expr -> NAME .)
+    NAME            reduce using rule 6 (expr -> NAME .)
+    LPAREN          reduce using rule 6 (expr -> NAME .)
+    RBRACKET        reduce using rule 6 (expr -> NAME .)
+    COMMA           reduce using rule 6 (expr -> NAME .)
+
+
+state 4
+
+    (3) exprStart -> FV . LBRACKET expr RBRACKET SEMI
+
+    LBRACKET        shift and go to state 10
+
+
+state 5
+
+    (4) exprStart -> ALPHA . LBRACKET expr COMMA NAME RBRACKET SEMI
+
+    LBRACKET        shift and go to state 11
+
+
+state 6
+
+    (5) expr -> NUMBER .
+
+    SEMI            reduce using rule 5 (expr -> NUMBER .)
+    LBRACKET        reduce using rule 5 (expr -> NUMBER .)
+    RPAREN          reduce using rule 5 (expr -> NUMBER .)
+    NUMBER          reduce using rule 5 (expr -> NUMBER .)
+    NAME            reduce using rule 5 (expr -> NUMBER .)
+    LPAREN          reduce using rule 5 (expr -> NUMBER .)
+    RBRACKET        reduce using rule 5 (expr -> NUMBER .)
+    COMMA           reduce using rule 5 (expr -> NUMBER .)
+
+
+state 7
+
+    (7) expr -> LPAREN . expr expr RPAREN
+    (8) expr -> LPAREN . LAMBDA NAME expr RPAREN
+    (9) expr -> LPAREN . OP expr expr RPAREN
+    (10) expr -> LPAREN . expr RPAREN
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    LAMBDA          shift and go to state 13
+    OP              shift and go to state 14
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 12
+
+state 8
+
+    (1) exprStart -> expr SEMI .
+
+    $end            reduce using rule 1 (exprStart -> expr SEMI .)
+
+
+state 9
+
+    (2) exprStart -> expr LBRACKET . NAME EQUALS expr RBRACKET SEMI
+
+    NAME            shift and go to state 15
+
+
+state 10
+
+    (3) exprStart -> FV LBRACKET . expr RBRACKET SEMI
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 16
+
+state 11
+
+    (4) exprStart -> ALPHA LBRACKET . expr COMMA NAME RBRACKET SEMI
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 17
+
+state 12
+
+    (7) expr -> LPAREN expr . expr RPAREN
+    (10) expr -> LPAREN expr . RPAREN
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    RPAREN          shift and go to state 19
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 18
+
+state 13
+
+    (8) expr -> LPAREN LAMBDA . NAME expr RPAREN
+
+    NAME            shift and go to state 20
+
+
+state 14
+
+    (9) expr -> LPAREN OP . expr expr RPAREN
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 21
+
+state 15
+
+    (2) exprStart -> expr LBRACKET NAME . EQUALS expr RBRACKET SEMI
+
+    EQUALS          shift and go to state 22
+
+
+state 16
+
+    (3) exprStart -> FV LBRACKET expr . RBRACKET SEMI
+
+    RBRACKET        shift and go to state 23
+
+
+state 17
+
+    (4) exprStart -> ALPHA LBRACKET expr . COMMA NAME RBRACKET SEMI
+
+    COMMA           shift and go to state 24
+
+
+state 18
+
+    (7) expr -> LPAREN expr expr . RPAREN
+
+    RPAREN          shift and go to state 25
+
+
+state 19
+
+    (10) expr -> LPAREN expr RPAREN .
+
+    SEMI            reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+    LBRACKET        reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+    RPAREN          reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+    NUMBER          reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+    NAME            reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+    LPAREN          reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+    RBRACKET        reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+    COMMA           reduce using rule 10 (expr -> LPAREN expr RPAREN .)
+
+
+state 20
+
+    (8) expr -> LPAREN LAMBDA NAME . expr RPAREN
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 26
+
+state 21
+
+    (9) expr -> LPAREN OP expr . expr RPAREN
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 27
+
+state 22
+
+    (2) exprStart -> expr LBRACKET NAME EQUALS . expr RBRACKET SEMI
+    (5) expr -> . NUMBER
+    (6) expr -> . NAME
+    (7) expr -> . LPAREN expr expr RPAREN
+    (8) expr -> . LPAREN LAMBDA NAME expr RPAREN
+    (9) expr -> . LPAREN OP expr expr RPAREN
+    (10) expr -> . LPAREN expr RPAREN
+
+    NUMBER          shift and go to state 6
+    NAME            shift and go to state 3
+    LPAREN          shift and go to state 7
+
+    expr                           shift and go to state 28
+
+state 23
+
+    (3) exprStart -> FV LBRACKET expr RBRACKET . SEMI
+
+    SEMI            shift and go to state 29
+
+
+state 24
+
+    (4) exprStart -> ALPHA LBRACKET expr COMMA . NAME RBRACKET SEMI
+
+    NAME            shift and go to state 30
+
+
+state 25
+
+    (7) expr -> LPAREN expr expr RPAREN .
+
+    SEMI            reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+    LBRACKET        reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+    RPAREN          reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+    NUMBER          reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+    NAME            reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+    LPAREN          reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+    RBRACKET        reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+    COMMA           reduce using rule 7 (expr -> LPAREN expr expr RPAREN .)
+
+
+state 26
+
+    (8) expr -> LPAREN LAMBDA NAME expr . RPAREN
+
+    RPAREN          shift and go to state 31
+
+
+state 27
+
+    (9) expr -> LPAREN OP expr expr . RPAREN
+
+    RPAREN          shift and go to state 32
+
+
+state 28
+
+    (2) exprStart -> expr LBRACKET NAME EQUALS expr . RBRACKET SEMI
+
+    RBRACKET        shift and go to state 33
+
+
+state 29
+
+    (3) exprStart -> FV LBRACKET expr RBRACKET SEMI .
+
+    $end            reduce using rule 3 (exprStart -> FV LBRACKET expr RBRACKET SEMI .)
+
+
+state 30
+
+    (4) exprStart -> ALPHA LBRACKET expr COMMA NAME . RBRACKET SEMI
+
+    RBRACKET        shift and go to state 34
+
+
+state 31
+
+    (8) expr -> LPAREN LAMBDA NAME expr RPAREN .
+
+    SEMI            reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+    LBRACKET        reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+    RPAREN          reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+    NUMBER          reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+    NAME            reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+    LPAREN          reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+    RBRACKET        reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+    COMMA           reduce using rule 8 (expr -> LPAREN LAMBDA NAME expr RPAREN .)
+
+
+state 32
+
+    (9) expr -> LPAREN OP expr expr RPAREN .
+
+    SEMI            reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+    LBRACKET        reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+    RPAREN          reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+    NUMBER          reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+    NAME            reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+    LPAREN          reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+    RBRACKET        reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+    COMMA           reduce using rule 9 (expr -> LPAREN OP expr expr RPAREN .)
+
+
+state 33
+
+    (2) exprStart -> expr LBRACKET NAME EQUALS expr RBRACKET . SEMI
+
+    SEMI            shift and go to state 35
+
+
+state 34
+
+    (4) exprStart -> ALPHA LBRACKET expr COMMA NAME RBRACKET . SEMI
+
+    SEMI            shift and go to state 36
+
+
+state 35
+
+    (2) exprStart -> expr LBRACKET NAME EQUALS expr RBRACKET SEMI .
+
+    $end            reduce using rule 2 (exprStart -> expr LBRACKET NAME EQUALS expr RBRACKET SEMI .)
+
+
+state 36
+
+    (4) exprStart -> ALPHA LBRACKET expr COMMA NAME RBRACKET SEMI .
+
+    $end            reduce using rule 4 (exprStart -> ALPHA LBRACKET expr COMMA NAME RBRACKET SEMI .)
+
