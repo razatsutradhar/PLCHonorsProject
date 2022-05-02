@@ -1,151 +1,287 @@
-
 from LCalcParser import parser
+
 freeVarSet = set()
 
-#unfinished. come back to later
-def eval_expression(tree):
-  if(tree[0] == 'freevars'):
-    freeVarSet.clear()
-    free_variable(tree[1])
-    return freeVarSet
-  elif(tree[0] == 'alpha'):
-    return alpha(tree[1],['name', tree[2]]) #debug: I hardcoded this but I can't do that for everything. So what now?
-  elif(tree[0] == 'substitute'):
-    return (substitute(tree[1],tree[2],tree[3]))
-  elif tree[0] == 'num':
-    return float(tree[1])
-  elif tree[0] == 'name':
-    return tree[1]
-  elif tree[0] == 'operation':
-    op = tree[1]
-    v1 = eval_expression(tree[2])
-    if isinstance(v1,str):
-      return v1
-    v2 = eval_expression(tree[3])
-    if isinstance(v2,str):
-      return v2
-    if op == '+':
-      return v1+v2
-    elif op == '-':
-      return v1-v2
-    elif op == '*':
-      return v1*v2
-    elif v2 != 0:
-      return v1/v2
+
+def toString(tree):
+    if (tree[0] == 'freevars'):
+        return "FV [ " + str(toString(tree[1])) + " ];"
+    elif (tree[0] == 'alpha'):
+        return "alpha [" + str(toString(tree[2])) + ", " + str(toString(tree[3])) + " ];"
+    elif (tree[0] == 'substitute'):
+        return str(toString(tree[1])) + " [ " + str(toString(tree[2])) + " = " + str(toString(tree[3])) + " ];"
+    elif tree[0] == 'num':
+        return str(tree[1])
+    elif tree[0] == 'name':
+        return str(tree[1])
+    elif tree[0] == 'operation':
+        return "(" + str(tree[1]) + " " + str(toString(tree[2])) + " " + str(toString(tree[3])) + ")"
+    elif tree[0] == 'application':
+        return "(" + toString(tree[1]) + " " + str(toString(tree[2])) + ")"
+    elif tree[0] == "abstraction":
+        return "( lambda " + str(toString(tree[1])) + " " + str(toString(tree[2])) + ")"
     else:
-      return 'ERROR: Divide by Zero'
-  #How many different cases of application are there?
-  # (x,y), (lambdaX. M)num, another application and another application
-  elif tree[0] == 'application':
-    outside_expr = True
-    return eval_expression(beta_reduction(tree))
+        return str(tree)
+
+
+def hasBetaReduction(tree):
+    if tree[0] == 'num':
+        return False
+    elif tree[0] == 'name':
+        return False
+    elif tree[0] == 'operation':
+        return hasBetaReduction(tree[2]) or hasBetaReduction(tree[3])
+    elif tree[0] == 'application':
+        return tree[1][0] == "abstraction" or hasBetaReduction(tree[1]) or hasBetaReduction(tree[2])
+    elif tree[0] == "abstraction":
+        return hasBetaReduction(tree[2])
+    else:
+        return False
+
+
+def applyBetaRedux(tree):
+    if tree[0] == 'num':
+        return tree
+    elif tree[0] == 'name':
+        return tree
+    elif tree[0] == 'operation':
+        tree[2] = applyBetaRedux(tree[2])
+        tree[3] = applyBetaRedux(tree[3])
+        return tree
+    elif tree[0] == 'application':
+        if tree[1][0] == "abstraction":
+            return alpha(tree[1], tree[2])
+        else:
+            tree[1] = applyBetaRedux(tree[1])
+            tree[2] = applyBetaRedux(tree[2])
+            return tree
+    elif tree[0] == "abstraction":
+        tree[2] = applyBetaRedux(tree[2])
+        return tree
+    else:
+        return tree
+
+
+def hasOpRedux(tree):
+    if tree[0] == 'num':
+        return False
+    elif tree[0] == 'name':
+        return False
+    elif tree[0] == 'operation':
+        if tree[2][0] == "num" and tree[3][0] == "num":
+            return True
+        else:
+            return hasOpRedux(tree[2]) or hasOpRedux(tree[3])
+    elif tree[0] == 'application':
+        return hasOpRedux(tree[1]) or hasOpRedux(tree[2])
+    elif tree[0] == "abstraction":
+        return hasOpRedux(tree[2])
+    else:
+        return False
+
+
+def applyOpRedux(tree):
+    if tree[0] == 'num':
+        return tree
+    elif tree[0] == 'name':
+        return tree
+    elif tree[0] == 'operation':
+        if tree[2][0] == "num" and tree[3][0] == "num":
+            op = tree[1]
+            v1 = float(eval_expression(tree[2]))
+            v2 = float(eval_expression(tree[3]))
+            if op == '+':
+                return ["num", v1 + v2]
+            elif op == '-':
+                return ["num", v1 - v2]
+            elif op == '*':
+                return ["num", v1 * v2]
+            elif v2 != 0:
+                return ["num", v1 / v2]
+            else:
+                return ['ERROR: Divide by Zero']
+        else:
+            tree[2] = applyOpRedux(tree[2])
+            tree[3] = applyOpRedux(tree[3])
+            return tree
+    elif tree[0] == 'application':
+        tree[1] = applyOpRedux(tree[1])
+        tree[2] = applyOpRedux(tree[2])
+        return tree
+    elif tree[0] == "abstraction":
+        tree[2] = applyOpRedux(tree[2])
+        return tree
+    else:
+        return tree
+
+
+# unfinished. come back to later
+def eval_expression(tree):
+    # print(tree)
+    if (tree[0] == 'freevars'):
+        freeVarSet.clear()
+        free_variable(tree[1])
+        return freeVarSet
+    elif (tree[0] == 'alpha'):
+        # print(toString(alpha(tree[1],['name', tree[2]])))
+        return alpha(tree[1],
+                     ['name', tree[2]])  # debug: I hardcoded this but I can't do that for everything. So what now?
+    elif (tree[0] == 'substitute'):
+        return (substitute(tree[1], tree[2], tree[3]))
+    elif tree[0] == 'num':
+        return float(tree[1])
+    elif tree[0] == 'name':
+        return tree[1]
+    elif tree[0] == 'operation':
+        op = tree[1]
+        v1 = eval_expression(tree[2])
+        if isinstance(v1, str):
+            return v1
+        v2 = eval_expression(tree[3])
+        if isinstance(v2, str):
+            return v2
+        if op == '+':
+            return v1 + v2
+        elif op == '-':
+            return v1 - v2
+        elif op == '*':
+            return v1 * v2
+        elif v2 != 0:
+            return v1 / v2
+        else:
+            return 'ERROR: Divide by Zero'
+    # How many different cases of application are there?
+    # (x,y), (lambdaX. M)num, another application and another application
+    elif tree[0] == 'application':
+        outside_expr = True
+        return eval_expression(beta_reduction(tree))
 
 
 def beta_reduction(tree):
-  if(tree[0] == 'application'):
-    new_tree = alpha(tree[1],tree[2])
-    return new_tree
+    if (tree[0] == 'application'):
+        new_tree = alpha(tree[1], tree[2])
+        print(toString(new_tree))
+        return new_tree
 
 
-#todo: change so it works with more advanced lambda expressions
-def alpha_helper(tree,oldvar,newvar): #debug: doesn't work with nested lambda expressions
-  global outside_expr
-  if(tree[0] == 'abstraction'):
-    if(tree[1] == oldvar): #only triggers for outter abstraction so for lambda x (lambda y (* x y)), it only does lambda x
-      new_tree = alpha_helper(tree[2],oldvar,newvar)
-      return new_tree #only executes when we have the final product
-    else:
-      return [tree[0], tree[1],alpha_helper(tree[2],oldvar,newvar)] # only triggers when we have an inner abstraction so it keeps the lambda y
-  elif (tree[0] == 'application'):
-    left_branch = alpha_helper(tree[1], oldvar, newvar)
-    right_branch = alpha_helper(tree[2], oldvar, newvar)
-    return [tree[0],left_branch,right_branch]
-  elif(tree[0] == 'operation'):
-    left_branch = alpha_helper(tree[2], oldvar, newvar)
-    right_branch = alpha_helper(tree[3], oldvar, newvar)
-    return [tree[0],tree[1],left_branch,right_branch]
-  elif (tree[0] == 'name'): #we're returning the sub-branch of the tree, not the value
-    if(tree[1] == oldvar):
-      return newvar
-    else:
-      return tree
-  elif (tree[0] == 'num'):
-    return tree
+# todo: change so it works with more advanced lambda expressions
+def alpha_helper(tree, oldvar, newvar):  # debug: doesn't work with nested lambda expressions
+    global outside_expr
+    if (tree[0] == 'abstraction'):
+        if (tree[
+            1] == oldvar):  # only triggers for outter abstraction so for lambda x (lambda y (* x y)), it only does lambda x
+            new_tree = alpha_helper(tree[2], oldvar, newvar)
+            return new_tree  # only executes when we have the final product
+        else:
+            return [tree[0], tree[1], alpha_helper(tree[2], oldvar,
+                                                   newvar)]  # only triggers when we have an inner abstraction so it keeps the lambda y
+    elif (tree[0] == 'application'):
+        left_branch = alpha_helper(tree[1], oldvar, newvar)
+        right_branch = alpha_helper(tree[2], oldvar, newvar)
+        return [tree[0], left_branch, right_branch]
+    elif (tree[0] == 'operation'):
+        left_branch = alpha_helper(tree[2], oldvar, newvar)
+        right_branch = alpha_helper(tree[3], oldvar, newvar)
+        return [tree[0], tree[1], left_branch, right_branch]
+    elif (tree[0] == 'name'):  # we're returning the sub-branch of the tree, not the value
+        if (tree[1] == oldvar):
+            return newvar
+        else:
+            return tree
+    elif (tree[0] == 'num'):
+        return tree
 
-def alpha(tree,var):
-  global outside_expr
-  new_tree = tree
-  if(tree[0] == 'abstraction'): #this should deal with nested lambda expressions
-    new_tree = (alpha_helper(new_tree, new_tree[1], var))
-    return new_tree
-  if(tree[0] == 'application'):
-    inner = (beta_reduction(tree))
-    return alpha(inner,var)
 
-#todo: change so it works with more complicated lambda expressions
-def substitute(tree,var,val):
-  if(tree[0] == 'abstraction'):
-    new_tree = [tree[0],tree[1],substitute(tree[2],var,val)]
-    return new_tree
-  elif(tree[0] == 'application'):
-    left_branch = substitute(tree[1], var, val)
-    right_branch = substitute(tree[2], var, val)
-    return [tree[0],left_branch,right_branch]
-  elif(tree[0] == 'operation'):
-    left_branch = substitute(tree[2], var, val)
-    right_branch = substitute(tree[3], var, val)
-    return [tree[0],left_branch,right_branch]
-  elif(tree[0] == 'name'):
-    if(tree[1] == var): #todo: add so it also evaluates that it is a free variable
-      return val #here val isn't a tree yet so we need to turn it into a tree
-    else:
-      return tree
-  elif (tree[0] == 'num'):
-    return tree
+def alpha(tree, var):
+    global outside_expr
+    new_tree = tree
+    if (tree[0] == 'abstraction'):  # this should deal with nested lambda expressions
+        new_tree = (alpha_helper(new_tree, new_tree[1], var))
+        return new_tree
+    if (tree[0] == 'application'):
+        inner = (beta_reduction(tree))
+        return alpha(inner, var)
 
-#finds the free variable of a single individual lambda expression. nothing more nothing less
+
+# todo: change so it works with more complicated lambda expressions
+def substitute(tree, var, val):
+    if (tree[0] == 'abstraction'):
+        new_tree = [tree[0], tree[1], substitute(tree[2], var, val)]
+        return new_tree
+    elif (tree[0] == 'application'):
+        left_branch = substitute(tree[1], var, val)
+        right_branch = substitute(tree[2], var, val)
+        return [tree[0], left_branch, right_branch]
+    elif (tree[0] == 'operation'):
+        left_branch = substitute(tree[2], var, val)
+        right_branch = substitute(tree[3], var, val)
+        return [tree[0], left_branch, right_branch]
+    elif (tree[0] == 'name'):
+        if (tree[1] == var):  # todo: add so it also evaluates that it is a free variable
+            return val  # here val isn't a tree yet so we need to turn it into a tree
+        else:
+            return tree
+    elif (tree[0] == 'num'):
+        return tree
+
+
+# finds the free variable of a single individual lambda expression. nothing more nothing less
 def free_variable(tree):
-  if tree[0] == 'name':  # we're returning the sub-branch of the tree, not the value
-    freeVarSet.add(tree[1])
-  elif tree[0] == 'abstraction':
-    free_variable(tree[2])
-    freeVarSet.remove(tree[1])
-  elif tree[0] == 'application':
-    free_variable(tree[1])
-    free_variable(tree[2])
+    if tree[0] == 'name':  # we're returning the sub-branch of the tree, not the value
+        freeVarSet.add(tree[1])
+    elif tree[0] == 'abstraction':
+        free_variable(tree[2])
+        freeVarSet.remove(tree[1])
+    elif tree[0] == 'application':
+        free_variable(tree[1])
+        free_variable(tree[2])
+
 
 def read_input():
-  result = ''
-  while True:
-    data = input('LAMBDA: ').strip() 
-    if ';' in data:
-      i = data.index(';')
-      result += data[0:i+1]
-      break
-    else:
-      result += data + ' '
-  return result
+    result = ''
+    while True:
+        data = input('LAMBDA: ').strip()
+        if ';' in data:
+            i = data.index(';')
+            result += data[0:i + 1]
+            break
+        else:
+            result += data + ' '
+    return result
+
 
 def main():
-  while True:
-    data = read_input() 
-    if data == 'exit;':
-      break
-    try:
-      tree = parser.parse(data)
-    except Exception as inst:
-      print(inst.args[0])
-      continue
-    #test:
-    print(tree)
-    print('\n')
-    try:
-      answer = eval_expression(tree)
-      if isinstance(answer,str):
-        print('\nEVALUATION ERROR: '+answer+'\n')
-      else:
-        print('\nThe value is '+str(answer)+'\n')
-    except Exception as inst:
-      print(inst.args[0])
- 
+    while True:
+        data = read_input()
+        if data == 'exit;':
+            break
+        try:
+            tree = parser.parse(data)
+        except Exception as inst:
+            print(inst.args[0])
+            continue
+        # test:
+        print(tree)
+        print('\n')
+        try:
+            print("beta redux exists: " + str(hasBetaReduction(tree)))
+            while hasBetaReduction(tree):
+                tree = applyOpRedux(tree)
+                tree = applyBetaRedux(tree)
+                print(toString(tree) + ";")
+                tree = parser.parse(toString(tree) + ";")
+                print("beta redux exists: " + str(hasBetaReduction(tree)))
+
+            while hasOpRedux(tree):
+                tree = applyOpRedux(tree)
+
+            print(tree)
+            # if isinstance(answer, str):
+            #     print('\nEVALUATION ERROR: ' + answer + '\n')
+            # else:
+            #     print('\nThe value is ' + str(answer) + '\n')
+        except Exception as inst:
+            print(inst.args[0])
+
+
 main()

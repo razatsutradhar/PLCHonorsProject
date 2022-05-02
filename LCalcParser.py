@@ -2,7 +2,7 @@ import ply.yacc as yacc
 from LCalcLexer import tokens
 
 def p_exprStart_1(p):
-  'exprStart : expr' #debug: took out SEMI at the end for it to work?
+  'exprStart : expr SEMI' #debug: took out SEMI at the end for it to work?
   p[0] = p[1]
 
 def p_exprStart_2(p):
@@ -14,7 +14,7 @@ def p_exprStart_3(p):
   p[0] = ['freevars', p[3]]
 
 def p_exprStart_4(p):
-  'exprStart : ALPHA LBRACKET expr COMMA NAME RBRACKET' #debug: took out SEMI at the end for it to work?
+  'exprStart : ALPHA LBRACKET expr COMMA NAME RBRACKET SEMI' #debug: took out SEMI at the end for it to work?
   p[0] = ['alpha', p[3], p[5].upper()]
 
 #( lambda x ( + x x ) 5 );
@@ -38,6 +38,11 @@ def p_expr_5(p):
   'expr : LPAREN OP expr expr RPAREN'
   p[0] = ['operation', p[2], p[3], p[4]]
 
+
+def p_expr_6(p):
+  'expr : LPAREN expr RPAREN'
+  p[0] = p[2]
+
 def p_error(p):
   print("Syntax error in input!")
 
@@ -56,7 +61,7 @@ parser = yacc.yacc()
 #       )
 #       (lambda x (* x x))
 #     )
-#     (lambda x (+ x x))
+#     ((lambda x (+ x x))5);
 #   )
 # 5
 # );

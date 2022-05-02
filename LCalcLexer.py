@@ -42,6 +42,9 @@ def t_error(t):
   raise Exception('LEXER ERROR')
 
 lexer = lex.lex()
+
+
+
 ## Test it out
 #data = '''
 #{with {{x 5} {y 2}} {- x y}};
