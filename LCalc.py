@@ -275,7 +275,7 @@ def main():
             while hasOpRedux(tree):
                 tree = applyOpRedux(tree)
 
-            print(tree)
+            print(toString(tree))
             # if isinstance(answer, str):
             #     print('\nEVALUATION ERROR: ' + answer + '\n')
             # else:
